@@ -30,10 +30,16 @@ export async function middleware(request: NextRequest) {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-
-  if (!user && !pathname.startsWith("/api")) {
-    return NextResponse.redirect(new URL("/auth", request.url));
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user && !pathname.startsWith("/api")) {
+      return NextResponse.redirect(new URL("/auth", request.url));
+    }
+  } catch {
+    // Auth check failed — let API routes handle their own auth, redirect pages to login
+    if (!pathname.startsWith("/api")) {
+      return NextResponse.redirect(new URL("/auth", request.url));
+    }
   }
 
   return response;
