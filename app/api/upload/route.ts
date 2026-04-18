@@ -147,8 +147,9 @@ export async function POST(req: NextRequest) {
     }
 
     if (!extractedText || extractedText.trim().length < 50) {
+      const joke = JOKES[Math.floor(Math.random() * JOKES.length)];
       return NextResponse.json(
-        { error: "Could not extract meaningful text from this file." },
+        { error: `Nothing readable in this file. ${joke}` },
         { status: 422 }
       );
     }
