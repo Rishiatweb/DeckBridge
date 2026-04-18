@@ -1,9 +1,0 @@
-
-> deckforge@0.1.0 start
-> next start --port 3002
-
-▲ Next.js 16.2.3
-- Local:         http://localhost:3002
-- Network:       http://192.168.31.117:3002
-✓ Ready in 1763ms
-[chat] using OpenRouter (google/gemma-4-26b-a4b-it:free)
