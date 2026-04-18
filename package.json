@@ -12,6 +12,8 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.89.0",
     "@prisma/client": "^5.22.0",
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.103.3",
     "framer-motion": "^12.38.0",
     "jszip": "^3.10.1",
     "mammoth": "^1.12.0",

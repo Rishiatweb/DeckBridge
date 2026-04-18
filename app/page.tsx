@@ -7,6 +7,7 @@ import UploadZone from "@/components/UploadZone";
 import DeckCard from "@/components/DeckCard";
 import ThemeToggle from "@/components/ThemeToggle";
 import CollectionBanner from "@/components/CollectionBanner";
+import { createClient } from "@/lib/supabase/client";
 
 interface RarityBreakdown {
   common: number;
@@ -75,6 +76,7 @@ function sortDecks(decks: Deck[], mode: SortMode): Deck[] {
 
 export default function HomePage() {
   const router = useRouter();
+  const supabase = createClient();
   const [decks, setDecks] = useState<Deck[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
@@ -180,6 +182,15 @@ export default function HomePage() {
               ⚡ My Mastery
             </Link>
             <ThemeToggle />
+            <button
+              onClick={async () => {
+                await supabase.auth.signOut();
+                router.push("/auth");
+              }}
+              className="text-xs font-semibold text-stone-500 dark:text-stone-400 hover:text-red-500 dark:hover:text-red-400 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700"
+            >
+              Sign out
+            </button>
           </div>
         </div>
       </header>

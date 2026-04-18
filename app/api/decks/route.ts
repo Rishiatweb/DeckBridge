@@ -3,14 +3,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { getCardLevel } from "@/lib/gamification";
+import { getUser } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 
 export async function GET() {
   try {
+    const user = await getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
     const now = new Date();
 
     const decks = await prisma.deck.findMany({
+      where: { userId: user.id },
       orderBy: { createdAt: "desc" },
       include: {
         cards: {
@@ -35,13 +40,11 @@ export async function GET() {
         const learning = d.cards.length - mastered - newCards;
         const due = d.cards.filter((c) => new Date(c.nextReviewDate) <= now).length;
 
-        // Most recent review across all cards in this deck
         const lastPracticed =
           d.cards
             .flatMap((c) => c.reviewLogs.map((r) => r.reviewedAt))
             .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())[0] ?? null;
 
-        // Rarity breakdown
         const rarityBreakdown = { common: 0, uncommon: 0, rare: 0, epic: 0, legendary: 0 };
         for (const c of d.cards) {
           const lvl = getCardLevel(c.repetitions, c.interval);

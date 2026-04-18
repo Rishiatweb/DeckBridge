@@ -5,6 +5,7 @@
 import { NextRequest } from "next/server";
 import { generateCardsFromChunk, generateSynthesisCards, generateDeckMeta, deduplicateCards, GeneratedCard } from "@/lib/claude";
 import { prisma } from "@/lib/db";
+import { getUser } from "@/lib/supabase/server";
 
 export const runtime = "nodejs";
 export const maxDuration = 55;
@@ -14,6 +15,14 @@ function sseEvent(data: Record<string, unknown>): string {
 }
 
 export async function POST(req: NextRequest) {
+  const user = await getUser();
+  if (!user) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const body = await req.json();
   const { chunks, fileName } = body as { chunks: string[]; fileName: string };
 
@@ -101,6 +110,7 @@ export async function POST(req: NextRequest) {
         // Store
         const deck = await prisma.deck.create({
           data: {
+            userId: user.id,
             title: meta.title,
             description: meta.description,
             colorTheme: meta.colorTheme ?? "slate",
