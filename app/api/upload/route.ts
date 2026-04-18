@@ -7,7 +7,7 @@ const pdfParse = require("pdf-parse");
 export const runtime = "nodejs";
 export const maxDuration = 60;
 
-const AZURE_ENDPOINT = "https://contracto1729-resource.services.ai.azure.com/models/chat/completions?api-version=2024-05-01-preview";
+const AZURE_ENDPOINT = "https://contracto1729-resource.cognitiveservices.azure.com";
 
 const JOKES = [
   "A .exe file walks into a bar. The bartender says 'We don't serve your type here.' Neither do I.",
@@ -61,36 +61,42 @@ async function extractDocxText(buffer: Buffer): Promise<string> {
 
 async function extractViaAzureVision(buffer: Buffer, mimeType: string): Promise<string> {
   const base64 = buffer.toString("base64");
-  const res = await fetch(AZURE_ENDPOINT, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "api-key": process.env.AZURE_API_KEY ?? "",
-    },
-    body: JSON.stringify({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Extract all readable text content from this document or image. Return only the raw text, preserving structure where possible.",
-            },
-            {
-              type: "image_url",
-              image_url: { url: `data:${mimeType};base64,${base64}` },
-            },
-          ],
-        },
-      ],
-      max_tokens: 4000,
-    }),
-  });
 
-  if (!res.ok) throw new Error(`Azure vision failed: ${res.status}`);
-  const json = await res.json();
-  return json.choices?.[0]?.message?.content ?? "";
+  // Submit analysis job
+  const submitRes = await fetch(
+    `${AZURE_ENDPOINT}/documentintelligence/documentModels/prebuilt-read:analyze?api-version=2024-11-30`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": process.env.AZURE_API_KEY ?? "",
+      },
+      body: JSON.stringify({ base64Source: base64 }),
+    }
+  );
+
+  if (!submitRes.ok) {
+    const err = await submitRes.text();
+    throw new Error(`Azure DI submit failed: ${submitRes.status} ${err}`);
+  }
+
+  const operationUrl = submitRes.headers.get("Operation-Location");
+  if (!operationUrl) throw new Error("Azure DI: no Operation-Location header");
+
+  // Poll until done
+  for (let i = 0; i < 30; i++) {
+    await new Promise((r) => setTimeout(r, 2000));
+    const pollRes = await fetch(operationUrl, {
+      headers: { "Ocp-Apim-Subscription-Key": process.env.AZURE_API_KEY ?? "" },
+    });
+    const result = await pollRes.json();
+    if (result.status === "succeeded") {
+      return result.analyzeResult?.content ?? "";
+    }
+    if (result.status === "failed") throw new Error("Azure DI analysis failed");
+  }
+
+  throw new Error("Azure DI timed out");
 }
 
 export async function POST(req: NextRequest) {
