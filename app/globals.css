@@ -34,23 +34,95 @@ body {
 
 /* ── Rarity card animations ─────────────────────────────────────────────── */
 
+/* Rare — animated metallic shimmer border */
+.rarity-rare {
+  position: relative;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.rarity-rare::before {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #e2e8f0, #f8fafc, #94a3b8, #f1f5f9, #cbd5e1, #f8fafc, #e2e8f0);
+  background-size: 300% 300%;
+  animation: rarityShimmer 4s ease infinite;
+  z-index: -1;
+}
+@keyframes rarityShimmer {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Epic — pulsing indigo glow */
 .rarity-epic {
   animation: epicGlow 3s ease-in-out infinite;
 }
-
-.rarity-legendary {
-  animation: holoGlow 4s ease infinite;
-}
-
 @keyframes epicGlow {
-  0%, 100% { box-shadow: 0 0 0 2px #6366f1, 0 0 15px rgba(99, 102, 241, 0.3); }
-  50%       { box-shadow: 0 0 0 2px #6366f1, 0 0 28px rgba(99, 102, 241, 0.55); }
+  0%, 100% { box-shadow: 0 0 0 2px #6366f1, 0 0 20px rgba(99, 102, 241, 0.5); }
+  50%       { box-shadow: 0 0 0 2px #6366f1, 0 0 45px rgba(99, 102, 241, 0.85); }
 }
 
-@keyframes holoGlow {
-  0%   { box-shadow: 0 0 0 3px #ec4899, 0 0 22px rgba(236, 72, 153, 0.45); }
-  25%  { box-shadow: 0 0 0 3px #14b8a6, 0 0 22px rgba(20, 184, 166, 0.45); }
-  50%  { box-shadow: 0 0 0 3px #f59e0b, 0 0 22px rgba(245, 158, 11, 0.45); }
-  75%  { box-shadow: 0 0 0 3px #8b5cf6, 0 0 22px rgba(139, 92, 246, 0.45); }
-  100% { box-shadow: 0 0 0 3px #ec4899, 0 0 22px rgba(236, 72, 153, 0.45); }
+/* Legendary — holographic cycling border + card face overlay */
+.rarity-legendary {
+  position: relative;
+  animation: legendaryGlow 4s ease infinite;
+  overflow: visible;
+}
+.rarity-legendary::before {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, #ec4899, #14b8a6, #f59e0b, #8b5cf6, #ec4899);
+  background-size: 400% 400%;
+  animation: holoShift 4s ease infinite;
+  z-index: -1;
+}
+/* Subtle iridescent overlay on the card face */
+.rarity-legendary::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(236,72,153,0.06), rgba(20,184,166,0.06), rgba(245,158,11,0.06), rgba(139,92,246,0.06));
+  background-size: 400% 400%;
+  animation: holoShift 4s ease infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+@keyframes holoShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+@keyframes legendaryGlow {
+  0%   { box-shadow: 0 0 35px rgba(236, 72, 153, 0.8); }
+  25%  { box-shadow: 0 0 35px rgba(20, 184, 166, 0.8); }
+  50%  { box-shadow: 0 0 35px rgba(245, 158, 11, 0.8); }
+  75%  { box-shadow: 0 0 35px rgba(139, 92, 246, 0.8); }
+  100% { box-shadow: 0 0 35px rgba(236, 72, 153, 0.8); }
+}
+
+/* ── Rarity card face backgrounds ───────────────────────────────────────── */
+
+.rarity-epic-bg {
+  animation: epicBg 3s ease-in-out infinite;
+}
+@keyframes epicBg {
+  0%, 100% { background-color: rgba(99, 102, 241, 0.15); }
+  50%       { background-color: rgba(99, 102, 241, 0.38); }
+}
+
+.rarity-legendary-bg {
+  animation: holoBg 4s ease infinite;
+}
+@keyframes holoBg {
+  0%   { background-color: rgba(236, 72, 153, 0.30); }
+  25%  { background-color: rgba(20, 184, 166, 0.30); }
+  50%  { background-color: rgba(245, 158, 11, 0.30); }
+  75%  { background-color: rgba(139, 92, 246, 0.30); }
+  100% { background-color: rgba(236, 72, 153, 0.30); }
 }

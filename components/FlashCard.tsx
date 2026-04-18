@@ -72,10 +72,19 @@ const THEME_STRIPE: Record<string, string> = {
 // ── Rarity border/glow classes (applied to card face divs) ────────────────
 const RARITY_BORDER: Record<number, string> = {
   0: "border-2 border-stone-200 dark:border-stone-600 shadow-sm",
-  1: "border-2 border-amber-400 shadow-md",
-  2: "border-2 border-slate-300 dark:border-slate-500 shadow-md",
+  1: "border-2 border-amber-400 shadow-md shadow-amber-100 dark:shadow-amber-900/30",
+  2: "rarity-rare shadow-md",
   3: "border-0 rarity-epic",
   4: "border-0 rarity-legendary",
+};
+
+// Animated background for epic/legendary — overrides static bg-white / bg-amber-50
+const RARITY_BG: Record<number, string> = {
+  0: "",
+  1: "",
+  2: "",
+  3: "rarity-epic-bg",
+  4: "rarity-legendary-bg",
 };
 
 // Rarity badge label + color
@@ -290,6 +299,7 @@ export default function FlashCard({
   const typeColor = TYPE_COLORS[type] || "bg-stone-100 dark:bg-stone-700 text-stone-600 dark:text-stone-300";
   const typeLabel = TYPE_LABELS[type] || type;
   const rarityBorder = RARITY_BORDER[cardLevel.level] ?? RARITY_BORDER[0];
+  const rarityBg = RARITY_BG[cardLevel.level] ?? "";
 
   const chatAreaProps = {
     cardId,
@@ -346,7 +356,7 @@ export default function FlashCard({
         <ProgressBar />
 
         {/* Question card with overlay */}
-        <div className={`relative bg-white dark:bg-stone-800 rounded-3xl p-8 pt-10 shadow-sm mb-4 ${rarityBorder}`}>
+        <div className={`relative rounded-3xl p-8 pt-10 shadow-sm mb-4 ${rarityBg || "bg-white dark:bg-stone-800"} ${rarityBorder}`}>
           <CardMetaOverlay
             level={cardLevel.level}
             difficulty={difficulty}
@@ -424,9 +434,9 @@ export default function FlashCard({
 
         <div
           className={`relative w-full min-h-[280px] rounded-3xl p-8 pt-10 flex flex-col items-center justify-center shadow-sm cursor-pointer transition-colors duration-300 ${
-            revealed
+            rarityBg || (revealed
               ? "bg-amber-50 dark:bg-amber-900/20"
-              : "bg-white dark:bg-stone-800 hover:border-amber-300"
+              : "bg-white dark:bg-stone-800 hover:border-amber-300")
           } ${rarityBorder}`}
           onClick={handleFlip}
         >
@@ -492,7 +502,7 @@ export default function FlashCard({
         >
           {/* Front face */}
           <div
-            className={`relative w-full min-h-[300px] bg-white dark:bg-stone-800 rounded-3xl p-8 pt-12 flex flex-col items-center justify-center shadow-sm ${rarityBorder}`}
+            className={`relative w-full min-h-[300px] rounded-3xl p-8 pt-12 flex flex-col items-center justify-center shadow-sm ${rarityBg || "bg-white dark:bg-stone-800"} ${rarityBorder}`}
             style={{ backfaceVisibility: "hidden" }}
           >
             <CardMetaOverlay
@@ -512,7 +522,7 @@ export default function FlashCard({
 
           {/* Back face */}
           <div
-            className={`absolute top-0 left-0 right-0 min-h-[300px] bg-amber-50 dark:bg-amber-900/20 rounded-3xl p-8 flex flex-col items-center justify-center overflow-y-auto ${rarityBorder}`}
+            className={`absolute top-0 left-0 right-0 min-h-[300px] rounded-3xl p-8 flex flex-col items-center justify-center overflow-y-auto ${rarityBg || "bg-amber-50 dark:bg-amber-900/20"} ${rarityBorder}`}
             style={{ backfaceVisibility: "hidden", transform: "rotateY(180deg)" }}
           >
             <p className="text-amber-600 dark:text-amber-400 text-xs uppercase tracking-widest mb-4 font-medium">Answer</p>

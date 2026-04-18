@@ -173,6 +173,12 @@ export default function HomePage() {
           <h1 className="text-xl font-bold text-stone-800 dark:text-stone-100">DeckForge</h1>
           <span className="hidden sm:inline text-stone-400 dark:text-stone-500 text-sm ml-1">AI Flashcard Engine</span>
           <div className="ml-auto flex items-center gap-2">
+            <Link
+              href="/mastery"
+              className="text-xs font-semibold text-stone-500 dark:text-stone-400 hover:text-stone-800 dark:hover:text-stone-100 transition-colors px-3 py-1.5 rounded-lg hover:bg-stone-100 dark:hover:bg-stone-700"
+            >
+              ⚡ My Mastery
+            </Link>
             <ThemeToggle />
           </div>
         </div>
