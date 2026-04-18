@@ -23,14 +23,15 @@ export default function UploadZone() {
 
   const processFile = useCallback(
     async (file: File) => {
-      if (file.type !== "application/pdf") {
-        setState({ status: "error", progress: "", batchText: "", pct: 0, error: "Only PDF files are supported" });
+      const supported = ["application/pdf","application/vnd.openxmlformats-officedocument.presentationml.presentation","application/vnd.openxmlformats-officedocument.wordprocessingml.document","image/jpeg","image/png","image/webp","image/gif"];
+      if (!supported.includes(file.type)) {
+        setState({ status: "error", progress: "", batchText: "", pct: 0, error: `Unsupported file type: ${file.type || "unknown"}` });
         return;
       }
 
       try {
         // Step 1: Extract text
-        setState({ status: "uploading", progress: "Extracting text from PDF...", batchText: "", pct: 10 });
+        setState({ status: "uploading", progress: "Extracting text...", batchText: "", pct: 10 });
         const formData = new FormData();
         formData.append("file", file);
 
@@ -192,7 +193,7 @@ export default function UploadZone() {
       >
         <input
           type="file"
-          accept=".pdf"
+          accept=".pdf,.docx,.pptx,.jpg,.jpeg,.png,.webp"
           className="hidden"
           onChange={handleFileInput}
           disabled={isProcessing}
@@ -201,9 +202,9 @@ export default function UploadZone() {
         {state.status === "idle" && (
           <>
             <div className="text-5xl mb-4">📄</div>
-            <p className="text-lg font-semibold text-stone-700 dark:text-stone-200">Drop your PDF here</p>
+            <p className="text-lg font-semibold text-stone-700 dark:text-stone-200">Drop your file here</p>
             <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">or click to browse</p>
-            <p className="text-xs text-stone-400 dark:text-stone-500 mt-3">Max 10MB · Text-based PDFs only</p>
+            <p className="text-xs text-stone-400 dark:text-stone-500 mt-3">PDF · DOCX · PPTX · Images · Max 10MB</p>
           </>
         )}
 
