@@ -1,0 +1,10 @@
+
+> deckforge@0.1.0 start
+> next start --port 3003
+
+▲ Next.js 16.2.3
+- Local:         http://localhost:3003
+- Network:       http://192.168.31.117:3003
+✓ Ready in 999ms
+[chat] using OpenRouter (google/gemma-4-26b-a4b-it:free -> openrouter/elephant-alpha -> openai/gpt-oss-20b:free -> meta-llama/llama-3.2-3b-instruct:free)
+[chat] OpenRouter succeeded with openrouter/elephant-alpha via Stealth

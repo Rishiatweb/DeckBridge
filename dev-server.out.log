@@ -1,0 +1,16 @@
+
+> deckforge@0.1.0 dev
+> next dev
+
+▲ Next.js 16.2.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.31.117:3000
+- Environments: .env.local, .env
+✓ Ready in 6.0s
+Creating turbopack project {
+  dir: 'C:\\Users\\scima\\OneDrive\\Documents\\Brain\\deckforge',
+  testMode: true
+}
+
+ POST /api/cards/cmo1jaqr700019x2bxfo84jlz/chat 404 in 2.9s (next.js: 2.2s, application-code: 644ms)
+[?25h

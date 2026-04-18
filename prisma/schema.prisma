@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Deck {
+  id             String   @id @default(cuid())
+  title          String
+  description    String   @default("")
+  colorTheme     String   @default("slate") // blue|emerald|amber|rose|violet|slate
+  sourceFileName String
+  createdAt      DateTime @default(now())
+  cards          Card[]
+}
+
+model Card {
+  id             String      @id @default(cuid())
+  deckId         String
+  deck           Deck        @relation(fields: [deckId], references: [id], onDelete: Cascade)
+  front          String
+  back           String
+  type           String      @default("concept") // concept|definition|relationship|application|edge_case
+  cardFormat     String      @default("basic")   // basic|mcq|fill_blank
+  options        String      @default("[]")       // JSON array of strings: [correct, wrong1, wrong2, wrong3]
+  difficulty     Int         @default(1)           // 1=recall, 2=understanding, 3=application/synthesis
+  chatMessageCount Int       @default(0)
+  easeFactor     Float       @default(2.5)
+  interval       Int         @default(1)
+  repetitions    Int         @default(0)
+  nextReviewDate DateTime    @default(now())
+  createdAt      DateTime    @default(now())
+  reviewLogs     ReviewLog[]
+}
+
+model ReviewLog {
+  id         String   @id @default(cuid())
+  cardId     String
+  card       Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  quality    Int      // 1=Again, 2=Hard, 4=Good, 5=Easy
+  reviewedAt DateTime @default(now())
+}
